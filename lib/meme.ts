@@ -32,27 +32,63 @@ function memeFontSize(len: number): number {
   return 34;
 }
 
-// Teks meme klasik: putih + outline hitam via WebkitTextStroke (didukung Satori).
+// Teks meme klasik: putih + outline hitam tebal.
+// WebkitTextStroke TIDAK di-paint Satori (terbukti 0 piksel) → pakai 8 salinan
+// offset + 1 salinan tak terlihat sebagai pengukur tinggi (biar blok bawah pas).
 function memeText(text: string, key: string): React.ReactNode {
   const upper = text.toUpperCase();
   const size = memeFontSize(upper.length);
-  const stroke = Math.max(2, Math.round(size / 30));
+  const off = Math.max(2, Math.round(size / 28));
+  const offsets: Array<[number, number]> = [
+    [-off, -off], [0, -off], [off, -off],
+    [-off, 0], [off, 0],
+    [-off, off], [0, off], [off, off],
+  ];
+  const font: React.CSSProperties = {
+    fontFamily: 'Anton, Arial, sans-serif',
+    fontSize: size,
+    lineHeight: 1.05,
+    letterSpacing: '0.02em',
+    wordBreak: 'break-word',
+    textAlign: 'center',
+  };
+  const copies: React.ReactNode[] = [
+    React.createElement(
+      'div',
+      { key: `${key}-sizer`, style: { ...font, width: '100%', color: '#FFFFFF', opacity: 0 } },
+      upper
+    ),
+  ];
+  offsets.forEach(([dx, dy], i) => {
+    copies.push(
+      React.createElement(
+        'div',
+        {
+          key: `${key}-o${i}`,
+          style: {
+            ...font, width: '100%', color: '#000000',
+            position: 'absolute', left: 0, top: 0,
+            transform: `translate(${dx}px, ${dy}px)`,
+          },
+        },
+        upper
+      )
+    );
+  });
+  copies.push(
+    React.createElement(
+      'div',
+      {
+        key: `${key}-main`,
+        style: { ...font, width: '100%', color: '#FFFFFF', position: 'absolute', left: 0, top: 0 },
+      },
+      upper
+    )
+  );
   return React.createElement(
     'div',
-    {
-      key,
-      style: {
-        fontFamily: 'Anton, Arial, sans-serif',
-        fontSize: size,
-        lineHeight: 1.05,
-        letterSpacing: '0.02em',
-        wordBreak: 'break-word',
-        textAlign: 'center',
-        color: '#FFFFFF',
-        WebkitTextStroke: `${stroke}px #000000`,
-      },
-    },
-    upper
+    { key, style: { display: 'flex', flexDirection: 'column', position: 'relative', width: '100%' } },
+    ...copies
   );
 }
 
