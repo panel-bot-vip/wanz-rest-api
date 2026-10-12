@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { LoaderIcon, AlertIcon } from './Icons';
 
 declare global {
   interface Window {
@@ -14,10 +15,8 @@ declare global {
         theme?: 'light' | 'dark';
         size?: 'normal' | 'compact';
         action?: string;
-        cData?: string;
       }) => string;
       reset: (widgetId: string) => void;
-      getResponse: (widgetId: string) => string;
     };
   }
 }
@@ -40,8 +39,6 @@ export default function TurnstileWidget({ onVerify, onExpire, onError, action }:
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    // Prevent double render
     if (widgetIdRef.current) return;
 
     const loadTurnstile = () => {
@@ -55,7 +52,6 @@ export default function TurnstileWidget({ onVerify, onExpire, onError, action }:
               setError(null);
               
               try {
-                // Server-side verification
                 const verifyRes = await fetch('/api/verify-turnstile', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
@@ -106,7 +102,6 @@ export default function TurnstileWidget({ onVerify, onExpire, onError, action }:
       }
     };
 
-    // Load Turnstile script if not already loaded
     if (!document.querySelector('script[src*="challenges.cloudflare.com"]')) {
       const script = document.createElement('script');
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
@@ -120,7 +115,6 @@ export default function TurnstileWidget({ onVerify, onExpire, onError, action }:
     }
 
     return () => {
-      // Cleanup
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
@@ -133,14 +127,16 @@ export default function TurnstileWidget({ onVerify, onExpire, onError, action }:
       <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center' }} />
       
       {isVerifying && (
-        <p style={{ color: 'var(--accent-purple)', fontSize: '0.875rem', marginTop: '8px', fontWeight: 600 }}>
-          ⏳ Memverifikasi...
+        <p style={{ color: 'var(--accent-purple)', fontSize: '0.8rem', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <LoaderIcon size={14} />
+          Memverifikasi...
         </p>
       )}
       
       {error && (
-        <p style={{ color: 'var(--accent-orange)', fontSize: '0.875rem', marginTop: '8px', fontWeight: 600 }}>
-          ❌ {error}
+        <p style={{ color: 'var(--accent-orange)', fontSize: '0.8rem', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <AlertIcon size={14} />
+          {error}
         </p>
       )}
     </div>

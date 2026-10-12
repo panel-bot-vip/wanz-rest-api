@@ -4,37 +4,29 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import { ZapIcon, RocketIcon, ChartIcon, ShieldIcon, UnlockIcon, TestTubeIcon, GlobeIcon, BatteryIcon, CheckIcon, AlertIcon } from '@/components/Icons';
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [ip, setIp] = useState('Memuat...');
+  const [ip, setIp] = useState('---');
   const [battery, setBattery] = useState<number | null>(null);
-  const [batteryCharging, setBatteryCharging] = useState(false);
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-
+    
     fetch('https://api.ipify.org?format=json')
-      .then((res) => res.json())
-      .then((data) => setIp(data.ip))
-      .catch(() => setIp('Tidak diketahui'));
+      .then(res => res.json())
+      .then(data => setIp(data.ip))
+      .catch(() => setIp('Unknown'));
 
     if ('getBattery' in navigator) {
-      (navigator as unknown as { getBattery: () => Promise<{
-        level: number;
-        charging: boolean;
-        addEventListener: (type: string, listener: () => void) => void;
-      }> }).getBattery()
-        .then((b) => {
-          setBattery(Math.round(b.level * 100));
-          setBatteryCharging(b.charging);
-          b.addEventListener('levelchange', () => setBattery(Math.round(b.level * 100)));
-          b.addEventListener('chargingchange', () => setBatteryCharging(b.charging));
-        })
-        .catch(() => setBattery(null));
-    } else {
-      setBattery(null);
+      (navigator as any).getBattery().then((battery: any) => {
+        setBattery(Math.round(battery.level * 100));
+        battery.addEventListener('levelchange', () => {
+          setBattery(Math.round(battery.level * 100));
+        });
+      });
     }
   }, []);
 
@@ -47,219 +39,180 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Header />
-
+      
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 pt-16 pb-8">
-        <div className="text-center mb-12">
-          <div className="neo-badge mb-6">✨ Gratis • Tanpa Login • Tanpa Ribet</div>
-
-          <h1
-            className="handwritten"
-            style={{
-              fontSize: 'clamp(2.5rem, 8vw, 5rem)',
-              fontWeight: 700,
-              lineHeight: 1.1,
-              marginBottom: '16px',
-              color: 'var(--text-primary)',
-            }}
-          >
+      <section className="max-w-4xl mx-auto px-4 py-12">
+        <div className="text-center mb-8">
+          <div className="neo-badge mb-4">
+            <CheckIcon size={16} />
+            <span>Gratis • Tanpa Login • Tanpa Ribet</span>
+          </div>
+          
+          <h1 className="handwritten" style={{ 
+            fontSize: 'clamp(2rem, 6vw, 3.5rem)', 
+            fontWeight: 700, 
+            lineHeight: 1.1,
+            marginBottom: '12px',
+            color: 'var(--text-primary)'
+          }}>
             Wanz REST API&apos;s
           </h1>
-
-          <div className="allergy-badge mb-6">🚫 Alergi Pake Api Key 🚫</div>
-
-          <p
-            style={{
-              fontSize: '1.25rem',
-              color: 'var(--text-secondary)',
-              maxWidth: '600px',
-              margin: '0 auto 32px',
-              lineHeight: 1.6,
-            }}
-          >
+          
+          <div className="allergy-badge mb-4">
+            Alergi Pake Api Key
+          </div>
+          
+          <p style={{ 
+            fontSize: '1rem', 
+            color: 'var(--text-secondary)', 
+            maxWidth: '500px', 
+            margin: '0 auto 24px',
+            lineHeight: 1.5
+          }}>
             Platform REST API modern untuk developer. Cepat, aman, dan tanpa ribet.
-            Langsung pakai tanpa perlu daftar!
           </p>
 
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-3 justify-center flex-wrap">
             <a href="/docs" className="neo-button neo-button-accent" style={{ textDecoration: 'none' }}>
-              🚀 Mulai Sekarang
+              <RocketIcon size={18} />
+              <span>Mulai Sekarang</span>
             </a>
-            <a href="#stats" className="neo-button neo-button-secondary" style={{ textDecoration: 'none' }}>
-              📊 Lihat Statistik
+            <a href="#features" className="neo-button neo-button-secondary" style={{ textDecoration: 'none' }}>
+              <ChartIcon size={18} />
+              <span>Lihat Fitur</span>
             </a>
           </div>
         </div>
 
         {/* Turnstile Verification */}
-        <div className="neo-card" style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
-          <h3 style={{ textAlign: 'center', marginBottom: '16px', color: 'var(--text-primary)' }}>
-            🔒 Verifikasi Keamanan
+        <div className="neo-card" style={{ padding: '20px', maxWidth: '400px', margin: '0 auto 32px' }}>
+          <h3 style={{ textAlign: 'center', marginBottom: '12px', color: 'var(--text-primary)', fontSize: '1rem' }}>
+            Verifikasi Keamanan
           </h3>
-          <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.875rem' }}>
-            Verifikasi untuk mengakses semua fitur API
-          </p>
           <TurnstileWidget onVerify={handleVerify} />
           {verified && (
-            <p style={{ textAlign: 'center', color: '#22c55e', fontWeight: 600 }}>
-              ✅ Verifikasi berhasil! Semua fitur terbuka untukmu.
+            <p style={{ textAlign: 'center', color: 'var(--accent-mint)', fontWeight: 600, fontSize: '0.875rem' }}>
+              <CheckIcon size={14} /> Verifikasi berhasil!
             </p>
           )}
         </div>
 
-        {/* Stats Section */}
-        <div id="stats" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-purple)' }}>50+</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Endpoint API</p>
-          </div>
-          <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-orange)' }}>99.9%</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Uptime</p>
-          </div>
-          <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-mint)' }}>10rb+</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Developer Aktif</p>
-          </div>
-        </div>
-
         {/* Visitor Info */}
-        <div className="neo-card" style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
-          <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>ℹ️ Info Pengunjung</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="neo-card" style={{ padding: '16px', maxWidth: '400px', margin: '0 auto 32px' }}>
+          <h3 style={{ marginBottom: '12px', color: 'var(--text-primary)', fontSize: '0.9rem' }}>Info Pengunjung</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>IP Address:</span>
-              <code
-                className="mono"
-                style={{
-                  background: 'var(--bg-secondary)',
-                  padding: '4px 12px',
-                  borderRadius: '6px',
-                  border: '2px solid var(--border-color)',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                }}
-              >
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>IP Address:</span>
+              <code style={{ 
+                background: 'var(--bg-secondary)', 
+                padding: '2px 8px', 
+                borderRadius: '4px',
+                border: '1px solid var(--border-color)',
+                fontWeight: 600,
+                fontSize: '0.8rem'
+              }}>
                 {ip}
               </code>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Status Baterai:</span>
-              <span
-                style={{
-                  fontWeight: 600,
-                  color:
-                    battery !== null
-                      ? battery > 20
-                        ? '#22c55e'
-                        : 'var(--accent-orange)'
-                      : 'var(--text-secondary)',
-                }}
-              >
-                {battery !== null ? `${battery}% ${batteryCharging ? '⚡' : '🔋'}` : 'Tidak didukung'}
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Baterai:</span>
+              <span style={{ 
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                color: battery !== null ? (battery > 20 ? 'var(--accent-mint)' : 'var(--accent-orange)') : 'var(--text-secondary)'
+              }}>
+                {battery !== null ? `${battery}%` : 'N/A'}
               </span>
             </div>
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="mb-16">
-          <h2
-            className="handwritten"
-            style={{
-              fontSize: '2.5rem',
-              textAlign: 'center',
-              marginBottom: '32px',
-              color: 'var(--text-primary)',
-            }}
-          >
-            ✨ Keunggulan Kami
+        <div id="features" className="mb-12">
+          <h2 className="handwritten" style={{ 
+            fontSize: '2rem', 
+            textAlign: 'center', 
+            marginBottom: '24px',
+            color: 'var(--text-primary)'
+          }}>
+            Keunggulan
           </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="neo-card" style={{ padding: '24px' }}>
-              <div className="feature-icon" style={{ background: 'var(--accent-yellow)' }}>
-                ⚡
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="neo-card" style={{ padding: '16px' }}>
+              <div className="feature-icon" style={{ background: 'var(--accent-yellow)', width: '48px', height: '48px' }}>
+                <ZapIcon size={24} />
               </div>
-              <h3 style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>Super Responsif</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                Response time cepat dengan infrastruktur modern dan optimal.
+              <h3 style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '1rem' }}>Super Responsif</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                Response time cepat dengan serverless infrastructure.
               </p>
             </div>
 
-            <div className="neo-card" style={{ padding: '24px' }}>
-              <div className="feature-icon" style={{ background: 'var(--accent-mint)' }}>
-                🔓
+            <div className="neo-card" style={{ padding: '16px' }}>
+              <div className="feature-icon" style={{ background: 'var(--accent-mint)', width: '48px', height: '48px' }}>
+                <UnlockIcon size={24} />
               </div>
-              <h3 style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>Tanpa Login</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                Langsung pakai tanpa perlu register atau login. Bebas!
+              <h3 style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '1rem' }}>Tanpa Login</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                Langsung pakai tanpa perlu register atau login.
               </p>
             </div>
 
-            <div className="neo-card" style={{ padding: '24px' }}>
-              <div className="feature-icon" style={{ background: 'var(--accent-orange)' }}>
-                🛡️
+            <div className="neo-card" style={{ padding: '16px' }}>
+              <div className="feature-icon" style={{ background: 'var(--accent-orange)', width: '48px', height: '48px' }}>
+                <ShieldIcon size={24} />
               </div>
-              <h3 style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>Aman</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                Dilindungi Cloudflare Turnstile dan keamanan berlapis.
+              <h3 style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '1rem' }}>Aman</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                Dilindungi Cloudflare Turnstile verification.
               </p>
             </div>
 
-            <div className="neo-card" style={{ padding: '24px' }}>
-              <div className="feature-icon" style={{ background: 'var(--accent-purple)' }}>
-                🧪
+            <div className="neo-card" style={{ padding: '16px' }}>
+              <div className="feature-icon" style={{ background: 'var(--accent-purple)', width: '48px', height: '48px' }}>
+                <TestTubeIcon size={24} />
               </div>
-              <h3 style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>Coba Langsung</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                Uji coba API langsung dari browser tanpa install apapun.
+              <h3 style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '1rem' }}>Coba Langsung</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                Uji coba API langsung dari browser.
               </p>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div
-          className="neo-card pulse-glow"
-          style={{
-            padding: '40px',
-            textAlign: 'center',
-            background: 'linear-gradient(135deg, var(--accent-purple), var(--accent-orange))',
-          }}
-        >
-          <h2
-            className="handwritten"
-            style={{
-              fontSize: '2.5rem',
-              color: 'white',
-              textShadow: '2px 2px 0px var(--border-color)',
-              marginBottom: '16px',
-            }}
-          >
+        <div className="neo-card pulse-glow" style={{ 
+          padding: '32px', 
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, var(--accent-purple), var(--accent-orange))'
+        }}>
+          <h2 className="handwritten" style={{ 
+            fontSize: '2rem', 
+            color: 'white',
+            textShadow: '2px 2px 0px var(--border-color)',
+            marginBottom: '12px'
+          }}>
             Siap Memulai?
           </h2>
-          <p
-            style={{
-              color: 'white',
-              fontSize: '1.125rem',
-              marginBottom: '24px',
-              textShadow: '1px 1px 0px var(--border-color)',
-            }}
-          >
+          <p style={{ 
+            color: 'white',
+            fontSize: '1rem',
+            marginBottom: '20px',
+            textShadow: '1px 1px 0px var(--border-color)'
+          }}>
             Gunakan API kami sekarang juga. Gratis, cepat, dan tanpa ribet!
           </p>
-          <a
-            href="/docs"
-            className="neo-button"
-            style={{
-              background: 'white',
-              color: 'var(--text-primary)',
-              textDecoration: 'none',
-              fontSize: '1.125rem',
-            }}
-          >
-            📖 Lihat Dokumentasi
+          <a href="/docs" className="neo-button" style={{ 
+            background: 'white',
+            color: 'var(--text-primary)',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <RocketIcon size={18} />
+            <span>Lihat Dokumentasi</span>
           </a>
         </div>
       </section>

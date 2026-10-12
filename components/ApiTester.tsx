@@ -1,39 +1,32 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import TurnstileWidget from './TurnstileWidget';
-import type { Endpoint } from '@/lib/endpoints';
+import { TestTubeIcon, SendIcon, AlertIcon, LoaderIcon, XIcon } from './Icons';
 
 interface ApiTesterProps {
-  endpoint: Endpoint;
+  endpoint: string;
+  method: string;
+  params: { name: string; type: string; required: boolean; description: string }[];
 }
 
-export default function ApiTester({ endpoint }: ApiTesterProps) {
+export default function ApiTester({ endpoint, method, params }: ApiTesterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
   const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<{
-    status: number;
-    data: unknown;
-    ms: number;
-  } | null>(null);
+  const [response, setResponse] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setParamValues({});
-    setVerified(false);
-    setResponse(null);
-    setError(null);
-  }, [endpoint]);
+  const handleVerify = (token: string) => {
+    if (token) {
+      setVerified(true);
+    }
+  };
 
-  const handleVerify = useCallback((token: string) => {
-    if (token) setVerified(true);
-  }, []);
-
-  const handleExpire = useCallback(() => {
+  const handleExpire = () => {
     setVerified(false);
-  }, []);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,18 +41,16 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
 
     try {
       const queryParams = new URLSearchParams();
-      endpoint.params.forEach((p) => {
-        const val = paramValues[p.name] || p.default || '';
-        if (val) queryParams.append(p.name, val);
+      params.forEach(p => {
+        if (paramValues[p.name]) {
+          queryParams.append(p.name, paramValues[p.name]);
+        }
       });
 
-      const url = `${endpoint.path}?${queryParams.toString()}`;
-      const start = performance.now();
+      const url = `${endpoint}?${queryParams.toString()}`;
       const res = await fetch(url);
       const data = await res.json();
-      const ms = Math.round(performance.now() - start);
-
-      setResponse({ status: res.status, data, ms });
+      setResponse(JSON.stringify(data, null, 2));
     } catch (err) {
       setError('Terjadi kesalahan saat memanggil API');
     } finally {
@@ -72,101 +63,94 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
       <button
         onClick={() => setIsOpen(true)}
         className="neo-button neo-button-purple"
-        style={{ padding: '8px 16px', fontSize: '0.875rem' }}
+        style={{ padding: '8px 16px', fontSize: '0.8rem' }}
       >
-        🧪 Uji Coba
+        <TestTubeIcon size={16} />
+        <span>Uji Coba</span>
       </button>
 
       {isOpen && (
         <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-          <div className="modal-content pop-in" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                🧪 Uji Coba API
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                Uji Coba API
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
                 style={{
                   background: 'var(--accent-orange)',
                   border: '2px solid var(--border-color)',
-                  borderRadius: '8px',
-                  width: '32px',
-                  height: '32px',
+                  borderRadius: '6px',
+                  width: '28px',
+                  height: '28px',
                   cursor: 'pointer',
                   fontWeight: 700,
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                ✕
+                <XIcon size={16} />
               </button>
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <span className="method-badge">{endpoint.method}</span>
-              <code className="mono" style={{ marginLeft: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                {endpoint.path}
+            <div style={{ marginBottom: '12px' }}>
+              <span className="method-badge">{method}</span>
+              <code style={{ marginLeft: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                {endpoint}
               </code>
             </div>
 
             <form onSubmit={handleSubmit}>
-              {endpoint.params.map((param) => (
-                <div key={param.name} style={{ marginBottom: '16px' }}>
-                  <label
-                    style={{ display: 'block', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary)' }}
-                  >
+              {params.map(param => (
+                <div key={param.name} style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', fontWeight: 600, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '0.8rem' }}>
                     {param.name}
                     {param.required && <span style={{ color: 'var(--accent-orange)' }}> *</span>}
-                    <span
-                      className="mono"
-                      style={{ fontWeight: 400, fontSize: '0.75rem', color: 'var(--text-secondary)', marginLeft: '8px' }}
-                    >
-                      ({param.type}) — {param.description}
+                    <span style={{ fontWeight: 400, fontSize: '0.7rem', color: 'var(--text-secondary)', marginLeft: '6px' }}>
+                      ({param.type})
                     </span>
                   </label>
                   <input
                     type="text"
                     className="neo-input"
-                    placeholder={`Masukkan ${param.name}...`}
+                    style={{ width: '100%', padding: '8px 12px', fontSize: '0.875rem' }}
+                    placeholder={param.description}
                     value={paramValues[param.name] || ''}
-                    onChange={(e) => setParamValues({ ...paramValues, [param.name]: e.target.value })}
+                    onChange={e => setParamValues({ ...paramValues, [param.name]: e.target.value })}
                     required={param.required}
                   />
                 </div>
               ))}
 
-              {endpoint.params.length === 0 && (
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  Endpoint ini tidak memerlukan parameter.
-                </p>
-              )}
-
-              <div style={{ margin: '20px 0' }}>
-                <p style={{ fontWeight: 600, marginBottom: '8px', color: 'var(--text-primary)' }}>
+              <div style={{ margin: '16px 0' }}>
+                <p style={{ fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary)', fontSize: '0.8rem' }}>
                   Verifikasi Captcha:
                 </p>
                 <TurnstileWidget onVerify={handleVerify} onExpire={handleExpire} />
                 {verified && (
-                  <p style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.875rem' }}>
-                    ✅ Verifikasi berhasil!
+                  <p style={{ color: 'var(--accent-mint)', fontWeight: 600, fontSize: '0.8rem' }}>
+                    Verifikasi berhasil!
                   </p>
                 )}
               </div>
 
               {error && (
-                <div
-                  style={{
-                    background: '#fee2e2',
-                    border: '2px solid #ef4444',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    marginBottom: '16px',
-                    color: '#dc2626',
-                    fontSize: '0.875rem',
-                  }}
-                >
+                <div style={{
+                  background: '#fee2e2',
+                  border: '2px solid #ef4444',
+                  borderRadius: '6px',
+                  padding: '8px',
+                  marginBottom: '12px',
+                  color: '#dc2626',
+                  fontSize: '0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <AlertIcon size={14} />
                   {error}
                 </div>
               )}
@@ -174,35 +158,22 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
               <button
                 type="submit"
                 className="neo-button neo-button-accent"
-                style={{ width: '100%', marginTop: '16px' }}
+                style={{ width: '100%', marginTop: '12px', justifyContent: 'center' }}
                 disabled={loading}
               >
-                {loading ? '⏳ Memanggil API...' : '🚀 Kirim Request'}
+                {loading ? <LoaderIcon size={16} /> : <SendIcon size={16} />}
+                <span>{loading ? 'Memanggil API...' : 'Kirim Request'}</span>
               </button>
             </form>
 
             {response && (
-              <div style={{ marginTop: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <h4 style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Response:</h4>
-                  <span
-                    style={{
-                      background: response.status >= 200 && response.status < 300 ? '#dcfce7' : '#fee2e2',
-                      color: response.status >= 200 && response.status < 300 ? '#166534' : '#991b1b',
-                      border: '1px solid',
-                      borderColor: response.status >= 200 && response.status < 300 ? '#22c55e' : '#ef4444',
-                      borderRadius: '4px',
-                      padding: '2px 8px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      fontFamily: 'Space Mono, monospace',
-                    }}
-                  >
-                    {response.status}
-                  </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{response.ms}ms</span>
+              <div style={{ marginTop: '16px' }}>
+                <h4 style={{ fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)', fontSize: '0.8rem' }}>
+                  Response:
+                </h4>
+                <div className="code-block" style={{ padding: '12px', fontSize: '0.8rem' }}>
+                  {response}
                 </div>
-                <div className="code-block">{JSON.stringify(response.data, null, 2)}</div>
               </div>
             )}
           </div>

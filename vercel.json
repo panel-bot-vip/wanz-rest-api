@@ -1,9 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "rest-api-wanz-codex",
   "framework": "nextjs",
   "buildCommand": "next build",
   "devCommand": "next dev",
-  "installCommand": "npm install",
+  "installCommand": "npm install --registry https://registry.npmjs.org",
   "regions": ["sin1"],
   "headers": [
     {
