@@ -16,6 +16,7 @@ interface ApiTesterProps {
 export default function ApiTester({ endpoint }: ApiTesterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
+  const [fileValues, setFileValues] = useState<Record<string, File>>({});
   const [verified, setVerified] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -28,11 +29,12 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
 
   useEffect(() => {
     setParamValues({});
+    setFileValues({});
     setVerified(false);
     setResponse(null);
     setError(null);
     setCopied(false);
-  }, [endpoint]);
+  }, [endpoint, isOpen]);
 
   // Kunci scroll body + tutup pakai ESC saat modal terbuka
   useEffect(() => {
@@ -70,15 +72,33 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
     setCopied(false);
 
     try {
-      const queryParams = new URLSearchParams();
-      endpoint.params.forEach((p) => {
-        const val = paramValues[p.name] || p.default || '';
-        if (val) queryParams.append(p.name, val);
-      });
-
-      const url = `${endpoint.path}?${queryParams.toString()}`;
       const start = performance.now();
-      const res = await fetch(url);
+      let url = endpoint.path;
+      let options: RequestInit = {};
+
+      if (endpoint.method === 'POST') {
+        const fd = new FormData();
+        endpoint.params.forEach((p) => {
+          if (p.type === 'file') {
+            const f = fileValues[p.name];
+            if (f) fd.append(p.name, f);
+          } else {
+            const val = paramValues[p.name] || p.default || '';
+            if (val) fd.append(p.name, val);
+          }
+        });
+        options = { method: 'POST', body: fd };
+      } else {
+        const queryParams = new URLSearchParams();
+        endpoint.params.forEach((p) => {
+          if (p.type === 'file') return;
+          const val = paramValues[p.name] || p.default || '';
+          if (val) queryParams.append(p.name, val);
+        });
+        url = `${endpoint.path}?${queryParams.toString()}`;
+      }
+
+      const res = await fetch(url, options);
       const data = await res.json();
       const ms = Math.round(performance.now() - start);
 
@@ -159,7 +179,23 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
                       ({param.type}) — {param.description}
                     </span>
                   </label>
-                  {param.options ? (
+                  {param.type === 'file' ? (
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="neo-input"
+                      onChange={(e) => {
+                        const f = e.target.files && e.target.files[0];
+                        setFileValues((prev) => {
+                          const next = { ...prev };
+                          if (f) next[param.name] = f;
+                          else delete next[param.name];
+                          return next;
+                        });
+                      }}
+                      required={param.required}
+                    />
+                  ) : param.options ? (
                     <select
                       className="neo-input"
                       value={paramValues[param.name] || param.default || param.options[0]}
