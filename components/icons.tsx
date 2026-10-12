@@ -314,3 +314,30 @@ export function LoaderIcon(props: IconProps) {
     </Base>
   );
 }
+
+export function StarIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </Base>
+  );
+}
+
+export function ActivityIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </Base>
+  );
+}
+
+export function ServerIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+      <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+      <line x1="6" y1="6" x2="6.01" y2="6" />
+      <line x1="6" y1="18" x2="6.01" y2="18" />
+    </Base>
+  );
+}

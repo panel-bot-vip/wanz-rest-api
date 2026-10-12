@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import { ENDPOINTS } from '@/lib/endpoints';
 import {
   SparklesIcon, BanIcon, RocketIcon, ChartIcon, LockIcon,
   CheckCircleIcon, InfoIcon, ZapIcon, BatteryIcon, UnlockIcon,
-  ShieldIcon, FlaskIcon, DocsIcon,
+  ShieldIcon, FlaskIcon, DocsIcon, StarIcon, ActivityIcon,
+  ServerIcon,
 } from '@/components/icons';
 
 const FEATURES = [
@@ -23,6 +25,11 @@ export default function Home() {
   const [battery, setBattery] = useState<number | null>(null);
   const [batteryCharging, setBatteryCharging] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
+  const [apiMs, setApiMs] = useState<number | null>(null);
+  const [stars, setStars] = useState<number | null>(null);
+
+  const liveEndpointCount = ENDPOINTS.filter((e) => e.status === 'live').length;
 
   useEffect(() => {
     setMounted(true);
@@ -31,6 +38,23 @@ export default function Home() {
       .then((res) => res.json())
       .then((data) => setIp(data.ip))
       .catch(() => setIp('Tidak diketahui'));
+
+    // Cek status API asli + ukur latency
+    const healthStart = performance.now();
+    fetch('/api/health')
+      .then((res) => {
+        setApiOnline(res.ok);
+        setApiMs(Math.round(performance.now() - healthStart));
+      })
+      .catch(() => setApiOnline(false));
+
+    // Jumlah star GitHub asli (data publik)
+    fetch('https://api.github.com/repos/panel-bot-vip/wanz-rest-api')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.stargazers_count === 'number') setStars(data.stargazers_count);
+      })
+      .catch(() => setStars(null));
 
     if ('getBattery' in navigator) {
       (navigator as unknown as { getBattery: () => Promise<{
@@ -123,19 +147,34 @@ export default function Home() {
           )}
         </div>
 
-        {/* Stats Section */}
+        {/* Stats Section — data asli, bukan angka karangan */}
         <div id="stats" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-purple)' }}>50+</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Endpoint API</p>
+            <div className="stat-number icon-text" style={{ color: 'var(--accent-purple)', justifyContent: 'center' }}>
+              <ServerIcon size={30} /> {liveEndpointCount}
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Endpoint Aktif</p>
           </div>
           <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-orange)' }}>99.9%</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Uptime</p>
+            <div
+              className="stat-number icon-text"
+              style={{
+                color: apiOnline === null ? 'var(--text-secondary)' : apiOnline ? '#22c55e' : 'var(--accent-orange)',
+                justifyContent: 'center',
+              }}
+            >
+              <span className="live-dot" style={{ background: apiOnline === null ? 'var(--text-secondary)' : apiOnline ? '#22c55e' : '#ef4444' }} />
+              {apiOnline === null ? '...' : apiOnline ? 'Online' : 'Offline'}
+            </div>
+            <p className="icon-text" style={{ color: 'var(--text-secondary)', fontWeight: 600, justifyContent: 'center' }}>
+              <ActivityIcon size={15} /> Status API{apiMs !== null ? ` • ${apiMs}ms` : ''}
+            </p>
           </div>
           <div className="neo-card stat-card">
-            <div className="stat-number" style={{ color: 'var(--accent-mint)' }}>10rb+</div>
-            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Developer Aktif</p>
+            <div className="stat-number icon-text" style={{ color: 'var(--accent-mint)', justifyContent: 'center' }}>
+              <StarIcon size={30} /> {stars === null ? '...' : stars}
+            </div>
+            <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>GitHub Stars</p>
           </div>
         </div>
 
