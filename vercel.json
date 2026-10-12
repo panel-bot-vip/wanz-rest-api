@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "rest-api-wanz-codex",
   "framework": "nextjs",
   "buildCommand": "next build",
   "devCommand": "next dev",
