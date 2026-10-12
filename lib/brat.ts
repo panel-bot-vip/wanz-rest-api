@@ -2,6 +2,38 @@ import React from 'react';
 import { ImageResponse } from '@vercel/og';
 
 const BRAT_GREEN = '#8ACE00';
+
+export const BRAT_COLORS: Record<string, string> = {
+  hijau: '#8ACE00',
+  putih: '#FFFFFF',
+  hitam: '#000000',
+  ungu: '#A855F7',
+  kuning: '#FACC15',
+  pink: '#F472B6',
+  biru: '#60A5FA',
+  merah: '#EF4444',
+  orange: '#FB923C',
+  mint: '#6EE7B7',
+};
+
+// Terima nama warna atau hex bebas (#rrggbb), teks menyesuaikan kontras.
+export function resolveBratColors(input: string): { bg: string; fg: string } {
+  const key = input.trim().toLowerCase();
+  let bg = BRAT_COLORS[key];
+  if (!bg) {
+    const hex = key.charAt(0) === '#' ? key : '#' + key;
+    if (/^#[0-9a-f]{6}$/i.test(hex)) {
+      bg = hex.toUpperCase();
+    } else {
+      bg = BRAT_GREEN;
+    }
+  }
+  const r = parseInt(bg.slice(1, 3), 16);
+  const g = parseInt(bg.slice(3, 5), 16);
+  const b = parseInt(bg.slice(5, 7), 16);
+  const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+  return { bg, fg: lum > 140 ? '#000000' : '#FFFFFF' };
+}
 const FONT_CSS_URL = 'https://fonts.googleapis.com/css2?family=Arimo:wght@400&display=swap';
 
 let fontCache: Promise<ArrayBuffer> | null = null;
@@ -31,11 +63,12 @@ function fontSizeFor(len: number, scale: number): number {
   return Math.round(base * scale);
 }
 
-// Render gambar gaya sampul "brat": kotak hijau + teks hitam tengah.
-export async function renderBrat(text: string, size: number): Promise<ImageResponse> {
+// Render gambar gaya sampul "brat": kotak warna + teks tengah kontras.
+export async function renderBrat(text: string, size: number, bgInput: string): Promise<ImageResponse> {
   const fontData = await getFont();
   const scale = size / 500;
   const pad = Math.round(size * 0.07);
+  const colors = resolveBratColors(bgInput || 'hijau');
 
   return new ImageResponse(
     React.createElement(
@@ -47,7 +80,7 @@ export async function renderBrat(text: string, size: number): Promise<ImageRespo
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: BRAT_GREEN,
+          background: colors.bg,
           padding: `${pad}px`,
         },
       },
@@ -57,7 +90,7 @@ export async function renderBrat(text: string, size: number): Promise<ImageRespo
           style: {
             fontFamily: 'Arimo, Arial, sans-serif',
             fontSize: fontSizeFor(text.length, scale),
-            color: '#000000',
+            color: colors.fg,
             textAlign: 'center',
             lineHeight: 0.95,
             letterSpacing: '-0.02em',

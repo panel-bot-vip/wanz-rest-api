@@ -3,6 +3,7 @@ import { renderBrat } from '@/lib/brat';
 
 export async function GET(req: NextRequest) {
   const text = req.nextUrl.searchParams.get('text')?.trim();
+  const bg = req.nextUrl.searchParams.get('bg')?.trim() || 'hijau';
 
   if (!text) {
     return NextResponse.json(
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    return await renderBrat(text, 1500);
+    return await renderBrat(text, 1500, bg);
   } catch {
     return NextResponse.json(
       { success: false, error: 'Gagal render gambar. Coba lagi.' },

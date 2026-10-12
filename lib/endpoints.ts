@@ -154,10 +154,11 @@ export const ENDPOINTS: Endpoint[] = [
     path: '/api/tools/brat',
     method: 'GET',
     category: 'Tools',
-    description: 'Bikin gambar meme gaya sampul "brat": kotak hijau + teks hitam. Balikin file PNG 500x500.',
+    description: 'Bikin gambar meme gaya sampul "brat": kotak warna + teks kontras. Balikin file PNG 500x500.',
     status: 'live',
     params: [
       { name: 'text', type: 'string', required: true, description: 'Teks di gambar (maks 120 karakter)' },
+      { name: 'bg', type: 'select', required: false, description: 'Warna background (nama atau hex)', default: 'hijau', options: ['hijau', 'putih', 'hitam', 'ungu', 'kuning', 'pink', 'biru', 'merah', 'orange', 'mint'] },
     ],
   },
   {
@@ -170,6 +171,7 @@ export const ENDPOINTS: Endpoint[] = [
     status: 'live',
     params: [
       { name: 'text', type: 'string', required: true, description: 'Teks di gambar (maks 120 karakter)' },
+      { name: 'bg', type: 'select', required: false, description: 'Warna background (nama atau hex)', default: 'hijau', options: ['hijau', 'putih', 'hitam', 'ungu', 'kuning', 'pink', 'biru', 'merah', 'orange', 'mint'] },
     ],
   },
 ];
