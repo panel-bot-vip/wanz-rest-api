@@ -237,7 +237,7 @@ export async function handleTolink(req: NextRequest, providerId: string) {
   }
 }
 
-async function fetchRemoteFile(u: string): Promise<{ blob: Blob; filename: string }> {
+export async function fetchRemoteFile(u: string): Promise<{ blob: Blob; filename: string }> {
   if (!/^https?:\/\//i.test(u)) throw new Error('bad_remote');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20000);

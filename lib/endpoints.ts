@@ -174,4 +174,19 @@ export const ENDPOINTS: Endpoint[] = [
       { name: 'bg', type: 'select', required: false, description: 'Warna background (nama atau hex)', default: 'hijau', options: ['hijau', 'putih', 'hitam', 'ungu', 'kuning', 'pink', 'biru', 'merah', 'orange', 'mint'] },
     ],
   },
+  {
+    id: 'smeme',
+    name: 'Sticker Meme',
+    path: '/api/tools/smeme',
+    method: 'POST',
+    category: 'Tools',
+    description: 'Bikin meme atas-bawah ala stiker WA: kirim gambar + teks top/bottom. Balikin PNG 800x800.',
+    status: 'live',
+    params: [
+      { name: 'image', type: 'file', required: false, description: 'File gambar (maks 4MB)' },
+      { name: 'url', type: 'string', required: false, description: 'Atau link gambar langsung' },
+      { name: 'top', type: 'string', required: false, description: 'Teks atas (maks 100 karakter)' },
+      { name: 'bottom', type: 'string', required: false, description: 'Teks bawah (maks 100 karakter)' },
+    ],
+  },
 ];
