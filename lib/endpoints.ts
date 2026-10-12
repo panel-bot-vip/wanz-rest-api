@@ -36,15 +36,15 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'ai-chat',
-    name: 'AI Chat',
+    name: 'AI Chat (DeepAI)',
     path: '/api/ai/chat',
     method: 'GET',
     category: 'AI',
-    description: 'Chat dengan AI gratis tanpa API key. Kirim pertanyaan lewat parameter `q`, opsional pilih `model`.',
+    description: 'Chat dengan AI gratis tanpa API key (scrape langsung DeepAI). Kirim pertanyaan lewat parameter `q`, opsional pilih `model`.',
     status: 'live',
     params: [
       { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
-      { name: 'model', type: 'select', required: false, description: 'Model AI yang dipakai', default: 'openai', options: ['openai', 'openai-fast'] },
+      { name: 'model', type: 'select', required: false, description: 'Model AI yang dipakai', default: 'standard', options: ['standard', 'llama-3.1-8b-instant', 'gpt-4o-mini', 'claude-haiku-5-5', 'glm-5.3-flash', 'qwen3.8-flash', 'deepseek-v4.1-flash', 'gpt-6-luna', 'gpt-5.6-luna', 'gpt-5.6-sol', 'tencent-hy3', 'gpt-oss-120b', 'gemma-4', 'llama-3.3-70b-instruct'] },
     ],
   },
 ];
