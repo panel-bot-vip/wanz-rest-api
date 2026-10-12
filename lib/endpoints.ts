@@ -4,6 +4,7 @@ export interface EndpointParam {
   required: boolean;
   description: string;
   default?: string;
+  options?: string[];
 }
 
 export interface Endpoint {
@@ -17,7 +18,7 @@ export interface Endpoint {
   params: EndpointParam[];
 }
 
-export const CATEGORIES = ['Semua', 'Pencarian'];
+export const CATEGORIES = ['Semua', 'Pencarian', 'AI'];
 
 export const ENDPOINTS: Endpoint[] = [
   {
@@ -31,6 +32,19 @@ export const ENDPOINTS: Endpoint[] = [
     params: [
       { name: 'q', type: 'string', required: true, description: 'Query pencarian' },
       { name: 'limit', type: 'number', required: false, description: 'Jumlah hasil (default: 8, max: 10)', default: '8' },
+    ],
+  },
+  {
+    id: 'ai-chat',
+    name: 'AI Chat',
+    path: '/api/ai/chat',
+    method: 'GET',
+    category: 'AI',
+    description: 'Chat dengan AI gratis tanpa API key. Kirim pertanyaan lewat parameter `q`, opsional pilih `model`.',
+    status: 'live',
+    params: [
+      { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
+      { name: 'model', type: 'select', required: false, description: 'Model AI yang dipakai', default: 'openai', options: ['openai', 'openai-fast'] },
     ],
   },
 ];

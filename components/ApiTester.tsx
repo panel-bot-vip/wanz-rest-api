@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import TurnstileWidget from './TurnstileWidget';
 import type { Endpoint } from '@/lib/endpoints';
 import {
@@ -112,15 +113,16 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
         <FlaskIcon size={16} /> Uji Coba
       </button>
 
-      {isOpen && (
-        <div className="modal-overlay" onClick={() => setIsOpen(false)}>
-          <div
-            className="modal-content pop-in"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Uji coba ${endpoint.name}`}
-          >
+      {isOpen &&
+        createPortal(
+          <div className="modal-overlay" onClick={() => setIsOpen(false)}>
+            <div
+              className="modal-content pop-in"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Uji coba ${endpoint.name}`}
+            >
             {/* Header modal + tombol X di pojok kanan atas */}
             <div className="modal-header">
               <h3 className="modal-title icon-text">
@@ -157,14 +159,29 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
                       ({param.type}) — {param.description}
                     </span>
                   </label>
-                  <input
-                    type="text"
-                    className="neo-input"
-                    placeholder={`Masukkan ${param.name}...`}
-                    value={paramValues[param.name] || ''}
-                    onChange={(e) => setParamValues({ ...paramValues, [param.name]: e.target.value })}
-                    required={param.required}
-                  />
+                  {param.options ? (
+                    <select
+                      className="neo-input"
+                      value={paramValues[param.name] || param.default || param.options[0]}
+                      onChange={(e) => setParamValues({ ...paramValues, [param.name]: e.target.value })}
+                      required={param.required}
+                    >
+                      {param.options.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      className="neo-input"
+                      placeholder={`Masukkan ${param.name}...`}
+                      value={paramValues[param.name] || ''}
+                      onChange={(e) => setParamValues({ ...paramValues, [param.name]: e.target.value })}
+                      required={param.required}
+                    />
+                  )}
                 </div>
               ))}
 
@@ -234,9 +251,10 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
                 <div className="code-block response-code">{JSON.stringify(response.data, null, 2)}</div>
               </div>
             )}
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
