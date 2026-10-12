@@ -18,7 +18,7 @@ export interface Endpoint {
   params: EndpointParam[];
 }
 
-export const CATEGORIES = ['Semua', 'Pencarian', 'AI'];
+export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader'];
 
 export const ENDPOINTS: Endpoint[] = [
   {
