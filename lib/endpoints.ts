@@ -257,4 +257,17 @@ export const ENDPOINTS: Endpoint[] = [
       { name: 'tanggal', type: 'string', required: false, description: 'Tanggal YYYY-MM-DD (default: hari ini WIB)' },
     ],
   },
+  {
+    id: 'tanya-islam',
+    name: 'Tanya Jawab Islam',
+    path: '/api/islami/tanya',
+    method: 'GET',
+    category: 'Islami',
+    description: 'Cari jawaban konsultasi Islam (fikih, akidah, ibadah) dari artikel konsultasi berbahasa Indonesia.',
+    status: 'live',
+    params: [
+      { name: 'q', type: 'string', required: true, description: 'Pertanyaan / kata kunci' },
+      { name: 'limit', type: 'string', required: false, description: 'Jumlah hasil 1-5 (default: 3)', default: '3' },
+    ],
+  },
 ];
