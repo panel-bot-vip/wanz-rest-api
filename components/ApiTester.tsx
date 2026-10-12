@@ -17,6 +17,10 @@ function isImageData(data: unknown): data is { _image: string } {
   return !!data && typeof data === 'object' && typeof (data as { _image?: unknown })._image === 'string';
 }
 
+function isAudioData(data: unknown): data is { _audio: string } {
+  return !!data && typeof data === 'object' && typeof (data as { _audio?: unknown })._audio === 'string';
+}
+
 export default function ApiTester({ endpoint }: ApiTesterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
@@ -111,6 +115,14 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
         const blob = await res.blob();
         data = {
           _image: URL.createObjectURL(blob),
+          content_type: blob.type,
+          size_bytes: blob.size,
+          preview: true,
+        };
+      } else if (ct.indexOf('audio/') === 0) {
+        const blob = await res.blob();
+        data = {
+          _audio: URL.createObjectURL(blob),
           content_type: blob.type,
           size_bytes: blob.size,
           preview: true,
@@ -278,7 +290,7 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
             </form>
 
             {/* Response Viewer Neo-Brutalisme di bawah tombol Kirim Request */}
-            {response && !isImageData(response.data) && (
+            {response && !isImageData(response.data) && !isAudioData(response.data) && (
               <div className="response-viewer">
                 <div className="response-viewer-header">
                   <h4 className="response-viewer-title icon-text"><DownloadIcon size={16} /> Response</h4>
@@ -333,6 +345,32 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
                     border: '3px solid var(--border-color)',
                     display: 'block',
                   }}
+                />
+              </div>
+            )}
+
+            {/* Preview audio untuk endpoint suara (tts) */}
+            {response && isAudioData(response.data) && (
+              <div className="response-viewer">
+                <div className="response-viewer-header">
+                  <h4 className="response-viewer-title icon-text">Audio</h4>
+                  <div className="response-viewer-meta">
+                    <span className="response-status response-status-ok">{response.status}</span>
+                    <span className="response-ms mono">{response.ms}ms</span>
+                    <a
+                      href={response.data._audio}
+                      download="tts.mp3"
+                      className="neo-button response-copy-btn"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      Simpan Audio
+                    </a>
+                  </div>
+                </div>
+                <audio
+                  controls
+                  src={response.data._audio}
+                  style={{ width: '100%' }}
                 />
               </div>
             )}

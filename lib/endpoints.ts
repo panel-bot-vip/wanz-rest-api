@@ -18,7 +18,7 @@ export interface Endpoint {
   params: EndpointParam[];
 }
 
-export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools'];
+export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools', 'Game'];
 
 export const ENDPOINTS: Endpoint[] = [
   {
@@ -187,6 +187,44 @@ export const ENDPOINTS: Endpoint[] = [
       { name: 'url', type: 'string', required: false, description: 'Atau link gambar langsung' },
       { name: 'top', type: 'string', required: false, description: 'Teks atas (maks 100 karakter)' },
       { name: 'bottom', type: 'string', required: false, description: 'Teks bawah (maks 100 karakter)' },
+    ],
+  },
+  {
+    id: 'quiz',
+    name: 'Kuis Trivia',
+    path: '/api/game/quiz',
+    method: 'GET',
+    category: 'Game',
+    description: 'Soal kuis pilihan ganda + bener/salah (Open Trivia DB). Opsi jawaban diacak tiap request.',
+    status: 'live',
+    params: [
+      { name: 'amount', type: 'string', required: false, description: 'Jumlah soal 1-10 (default: 1)', default: '1' },
+      { name: 'category', type: 'string', required: false, description: 'ID kategori (mis. 9=umum, 18=komputer)' },
+      { name: 'difficulty', type: 'select', required: false, description: 'Level kesulitan', default: '', options: ['', 'easy', 'medium', 'hard'] },
+      { name: 'type', type: 'select', required: false, description: 'Tipe soal', default: '', options: ['', 'multiple', 'boolean'] },
+    ],
+  },
+  {
+    id: 'lontong',
+    name: 'Kuis Cak Lontong',
+    path: '/api/game/lontong',
+    method: 'GET',
+    category: 'Game',
+    description: 'Tebak-tebakan absurd ala Cak Lontong (soal + jawaban + penjelasan). Tanpa parameter.',
+    status: 'live',
+    params: [],
+  },
+  {
+    id: 'tts',
+    name: 'Text to Speech',
+    path: '/api/tools/tts',
+    method: 'GET',
+    category: 'Tools',
+    description: 'Ubah teks jadi suara (MP3). Balikin file audio, bisa diputar langsung di tester.',
+    status: 'live',
+    params: [
+      { name: 'text', type: 'string', required: true, description: 'Teks (maks 1000 karakter)' },
+      { name: 'lang', type: 'select', required: false, description: 'Bahasa suara', default: 'id', options: ['id', 'en', 'ms', 'jv', 'su', 'ja', 'ko', 'zh-CN', 'ar', 'es', 'de', 'fr'] },
     ],
   },
 ];
