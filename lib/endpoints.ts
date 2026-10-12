@@ -18,7 +18,7 @@ export interface Endpoint {
   params: EndpointParam[];
 }
 
-export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools', 'Game'];
+export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools', 'Game', 'Islami'];
 
 export const ENDPOINTS: Endpoint[] = [
   {
@@ -216,15 +216,45 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'tts',
-    name: 'Text to Speech',
-    path: '/api/tools/tts',
+    name: 'TTS (Teka-Teki Silang)',
+    path: '/api/game/tts',
     method: 'GET',
-    category: 'Tools',
-    description: 'Ubah teks jadi suara (MP3). Balikin file audio, bisa diputar langsung di tester.',
+    category: 'Game',
+    description: 'Teka-teki silang: petunjuk + jawaban kata + jumlah huruf. Tanpa parameter.',
+    status: 'live',
+    params: [],
+  },
+  {
+    id: 'tebakgambar',
+    name: 'Tebak Gambar',
+    path: '/api/game/tebakgambar',
+    method: 'GET',
+    category: 'Game',
+    description: 'Tebak kata dari gambar (link gambar + jawaban + penjelasan). Tanpa parameter.',
+    status: 'live',
+    params: [],
+  },
+  {
+    id: 'tebakata',
+    name: 'Tebak Kata',
+    path: '/api/game/tebakata',
+    method: 'GET',
+    category: 'Game',
+    description: 'Tebak satu kata dari 5 petunjuk + jumlah huruf. Tanpa parameter.',
+    status: 'live',
+    params: [],
+  },
+  {
+    id: 'jadwal-shalat',
+    name: 'Jadwal Shalat',
+    path: '/api/islami/jadwal',
+    method: 'GET',
+    category: 'Islami',
+    description: 'Jadwal shalat harian per kota (imsak-isya). Isi nama/ID kota, opsional tanggal YYYY-MM-DD.',
     status: 'live',
     params: [
-      { name: 'text', type: 'string', required: true, description: 'Teks (maks 1000 karakter)' },
-      { name: 'lang', type: 'select', required: false, description: 'Bahasa suara', default: 'id', options: ['id', 'en', 'ms', 'jv', 'su', 'ja', 'ko', 'zh-CN', 'ar', 'es', 'de', 'fr'] },
+      { name: 'kota', type: 'string', required: false, description: 'Nama atau ID kota (default: jakarta)', default: 'jakarta' },
+      { name: 'tanggal', type: 'string', required: false, description: 'Tanggal YYYY-MM-DD (default: hari ini WIB)' },
     ],
   },
 ];
