@@ -72,6 +72,30 @@ export const ENDPOINTS: Endpoint[] = [
     ],
   },
   {
+    id: 'ytmp4',
+    name: 'YouTube MP4',
+    path: '/api/dl/ytmp4',
+    method: 'GET',
+    category: 'Downloader',
+    description: 'Ambil link download video YouTube MP4 (video+audio) langsung via InnerTube + decipher sendiri.',
+    status: 'live',
+    params: [
+      { name: 'url', type: 'string', required: true, description: 'Link / ID video YouTube' },
+    ],
+  },
+  {
+    id: 'ytmp3',
+    name: 'YouTube MP3',
+    path: '/api/dl/ytmp3',
+    method: 'GET',
+    category: 'Downloader',
+    description: 'Ambil audio YouTube (MP4 berisi audio lengkap; audio-only murni butuh login, lihat note).',
+    status: 'live',
+    params: [
+      { name: 'url', type: 'string', required: true, description: 'Link / ID video YouTube' },
+    ],
+  },
+  {
     id: 'amfinder',
     name: 'AM Preset Finder',
     path: '/api/tools/amfinder',
