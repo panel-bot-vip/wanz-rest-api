@@ -270,4 +270,16 @@ export const ENDPOINTS: Endpoint[] = [
       { name: 'limit', type: 'string', required: false, description: 'Jumlah hasil 1-5 (default: 3)', default: '3' },
     ],
   },
+  {
+    id: 'kisah-nabi',
+    name: 'Kisah 25 Nabi',
+    path: '/api/islami/kisah',
+    method: 'GET',
+    category: 'Islami',
+    description: 'Baca kisah 25 nabi (lengkap + tahun lahir + usia). Pilih nama nabi, kosongkan untuk daftar.',
+    status: 'live',
+    params: [
+      { name: 'nabi', type: 'select', required: false, description: 'Nama nabi (kosongkan = daftar)', default: '', options: ['', 'adam', 'idris', 'nuh', 'hud', 'sholeh', 'ibrahim', 'ismail', 'luth', 'ishaq', 'yaqub', 'yusuf', 'syuaib', 'ayyub', 'dzulkifli', 'musa', 'harun', 'daud', 'sulaiman', 'ilyas', 'ilyasa', 'yunus', 'zakariya', 'yahya', 'isa', 'muhammad'] },
+    ],
+  },
 ];
