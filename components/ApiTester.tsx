@@ -13,6 +13,10 @@ interface ApiTesterProps {
   endpoint: Endpoint;
 }
 
+function isImageData(data: unknown): data is { _image: string } {
+  return !!data && typeof data === 'object' && typeof (data as { _image?: unknown })._image === 'string';
+}
+
 export default function ApiTester({ endpoint }: ApiTesterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
@@ -99,7 +103,21 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
       }
 
       const res = await fetch(url, options);
-      const data = await res.json();
+      const ct = res.headers.get('content-type') || '';
+      let data: unknown;
+      if (ct.indexOf('application/json') !== -1) {
+        data = await res.json();
+      } else if (ct.indexOf('image/') === 0) {
+        const blob = await res.blob();
+        data = {
+          _image: URL.createObjectURL(blob),
+          content_type: blob.type,
+          size_bytes: blob.size,
+          preview: true,
+        };
+      } else {
+        data = { _text: await res.text() };
+      }
       const ms = Math.round(performance.now() - start);
 
       setResponse({ status: res.status, data, ms });
@@ -260,7 +278,7 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
             </form>
 
             {/* Response Viewer Neo-Brutalisme di bawah tombol Kirim Request */}
-            {response && (
+            {response && !isImageData(response.data) && (
               <div className="response-viewer">
                 <div className="response-viewer-header">
                   <h4 className="response-viewer-title icon-text"><DownloadIcon size={16} /> Response</h4>
@@ -285,6 +303,37 @@ export default function ApiTester({ endpoint }: ApiTesterProps) {
                   </div>
                 </div>
                 <div className="code-block response-code">{JSON.stringify(response.data, null, 2)}</div>
+              </div>
+            )}
+
+            {/* Preview gambar untuk endpoint image (brat) */}
+            {response && isImageData(response.data) && (
+              <div className="response-viewer">
+                <div className="response-viewer-header">
+                  <h4 className="response-viewer-title icon-text"><DownloadIcon size={16} /> Gambar</h4>
+                  <div className="response-viewer-meta">
+                    <span className="response-status response-status-ok">{response.status}</span>
+                    <span className="response-ms mono">{response.ms}ms</span>
+                    <a
+                      href={response.data._image}
+                      download="brat.png"
+                      className="neo-button response-copy-btn"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      Simpan Gambar
+                    </a>
+                  </div>
+                </div>
+                <img
+                  src={response.data._image}
+                  alt="Hasil brat generator"
+                  style={{
+                    width: '100%',
+                    borderRadius: '8px',
+                    border: '3px solid var(--border-color)',
+                    display: 'block',
+                  }}
+                />
               </div>
             )}
             </div>

@@ -148,4 +148,28 @@ export const ENDPOINTS: Endpoint[] = [
       { name: 'url', type: 'string', required: false, description: 'Atau link gambar langsung' },
     ],
   },
+  {
+    id: 'brat',
+    name: 'Brat Generator',
+    path: '/api/tools/brat',
+    method: 'GET',
+    category: 'Tools',
+    description: 'Bikin gambar meme gaya sampul "brat": kotak hijau + teks hitam. Balikin file PNG 500x500.',
+    status: 'live',
+    params: [
+      { name: 'text', type: 'string', required: true, description: 'Teks di gambar (maks 120 karakter)' },
+    ],
+  },
+  {
+    id: 'brathd',
+    name: 'Brat HD Generator',
+    path: '/api/tools/brathd',
+    method: 'GET',
+    category: 'Tools',
+    description: 'Versi resolusi tinggi brat generator. Balikin file PNG 1500x1500.',
+    status: 'live',
+    params: [
+      { name: 'text', type: 'string', required: true, description: 'Teks di gambar (maks 120 karakter)' },
+    ],
+  },
 ];
