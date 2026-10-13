@@ -63,12 +63,13 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  // 2. [admin] Akses persisten (hanya kalau Upstash sudah dipasang)
-  if (kvReady()) {
+  // 2. Akses persisten (Upstash): log IP, blokir, maintenance
+  const infoPage = pathname === '/perawatan' || pathname === '/diblokir';
+  if (kvReady() && !infoPage) {
     // 2a. Catat IP pengunjung (throttled, tanpa error)
     await recordVisit(ip);
 
-    // 2b. IP yang diblokir -> 403
+    // 2b. IP yang diblokir -> halaman 403 neo-brutalisme
     const blocklist = await getBlocklist();
     if (blocklist.has(ip)) {
       if (isApi) {
@@ -77,13 +78,10 @@ export async function middleware(request: NextRequest) {
           { status: 403 }
         );
       }
-      return new NextResponse(
-        '<!doctype html><html lang="id"><body style="font-family:sans-serif;background:#0f0f23;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><h1 style="border:3px solid #fff;padding:16px 24px">403 — IP Anda diblokir</h1></body></html>',
-        { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }
-      );
+      return NextResponse.rewrite(new URL('/diblokir', request.url));
     }
 
-    // 2c. Mode maintenance -> nonaktifkan situs untuk umum
+    // 2c. Mode maintenance -> halaman perawatan neo-brutalisme (auto-refresh)
     if (await getMaintenance()) {
       if (isApi) {
         return NextResponse.json(
@@ -91,10 +89,7 @@ export async function middleware(request: NextRequest) {
           { status: 503, headers: { 'retry-after': '300' } }
         );
       }
-      return new NextResponse(
-        '<!doctype html><html lang="id"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Perawatan — Wanz REST API</title></head><body style="font-family:sans-serif;background:#0f0f23;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center"><div><div style="font-size:60px">🛠️</div><h1 style="border:3px solid #FACC15;color:#FACC15;padding:16px 24px">Sedang Perawatan</h1><p>Server sedang diperbarui. Coba lagi beberapa saat lagi.</p></div></body></html>',
-        { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'retry-after': '300' } }
-      );
+      return NextResponse.rewrite(new URL('/perawatan', request.url));
     }
   }
 

@@ -22,7 +22,7 @@ export function kvReady(): boolean {
 }
 
 /* ---------- cache in-memory (per instance) supaya jarang nembak Redis ---------- */
-const CACHE_TTL = 20_000;
+const CACHE_TTL = 3_000; // 3 dtk — biar toggle maintenance/blokir dari admin kerasa cepat
 let maintCache: { val: boolean; at: number } | null = null;
 let blockCache: { val: Set<string>; at: number } | null = null;
 
