@@ -59,10 +59,10 @@ function getFont(): Promise<ArrayBuffer> {
   return fontCache;
 }
 
-// Ukuran font meniru textFit generator asli: teks mengisi kotak (dibatasi 34% lebar).
+// Ukuran font meniru textFit generator asli: teks mengisi kotak (nyaris penuh).
 function fontSizeFor(len: number, size: number): number {
-  const fit = size * Math.sqrt(0.85 / Math.max(len, 1));
-  const cap = size * 0.34;
+  const fit = size * Math.sqrt(0.95 / Math.max(len, 1));
+  const cap = size * 0.40;
   return Math.round(Math.min(fit, cap));
 }
 
