@@ -824,6 +824,18 @@ export const ENDPOINTS: Endpoint[] = [
     ],
   },
   {
+    id: 'host-check',
+    name: 'Host Check',
+    path: '/api/tools/host-check',
+    method: 'GET',
+    category: 'Tools',
+    description: 'Cek hosting & status sebuah web.',
+    status: 'live',
+    params: [
+      { name: 'url', type: 'string', required: true, description: 'URL/domain situs' },
+    ],
+  },
+  {
     id: 'webrecord',
     name: 'Record Web',
     path: '/api/tools/webrecord',
