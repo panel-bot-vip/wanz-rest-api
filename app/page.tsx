@@ -10,6 +10,7 @@ import CountUp from '@/components/CountUp';
 import FloatingSparkles from '@/components/FloatingSparkles';
 import RoastSection from '@/components/RoastSection';
 import Loader from '@/components/Loader';
+import JoinDialog from '@/components/JoinDialog';
 import { ENDPOINTS } from '@/lib/endpoints';
 import {
   SparklesIcon, BanIcon, RocketIcon, ChartIcon, LockIcon,
@@ -85,6 +86,7 @@ export default function Home() {
   return (
     <>
       {loading && <Loader onDone={() => setLoading(false)} />}
+      <JoinDialog />
       <ScrollProgress />
       <RevealOnScroll />
       <div className="min-h-screen page-layer">
