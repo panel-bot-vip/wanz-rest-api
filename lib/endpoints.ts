@@ -120,6 +120,30 @@ export const ENDPOINTS: Endpoint[] = [
     ],
   },
   {
+    id: 'instagram-dl',
+    name: 'Instagram Downloader',
+    path: '/api/dl/instagram',
+    method: 'GET',
+    category: 'Downloader',
+    description: 'Download video / foto / Reel Instagram.',
+    status: 'soon',
+    params: [
+      { name: 'url', type: 'string', required: true, description: 'Link post / Reel Instagram' },
+    ],
+  },
+  {
+    id: 'terabox-dl',
+    name: 'TeraBox Downloader',
+    path: '/api/dl/terabox',
+    method: 'GET',
+    category: 'Downloader',
+    description: 'Ambil link file dari share TeraBox.',
+    status: 'soon',
+    params: [
+      { name: 'url', type: 'string', required: true, description: 'Link share TeraBox' },
+    ],
+  },
+  {
     id: 'ytmp4',
     name: 'YouTube MP4',
     path: '/api/dl/ytmp4',
