@@ -20,13 +20,23 @@ export function kvReady(): boolean {
   return !!r();
 }
 
+/**
+ * Normalisasi nilai dari Redis.
+ * @upstash/redis bisa mbalikin '1' (string), 1 (number), atau '"1"' (raw JSON)
+ * tergantung mode serialisasi — supaya perbandingan scalar gak pernah salah.
+ */
+function norm(v: unknown): string {
+  if (v === null || v === undefined) return '';
+  return String(v).replace(/^"|"$/g, '');
+}
+
 /* ---------- MAINTENANCE ---------- */
 export async function getMaintenance(): Promise<boolean> {
   const c = r();
   if (!c) return false;
   try {
     const v = await c.get('wanz:maintenance');
-    return v === '1' || v === true;
+    return norm(v) === '1';
   } catch {
     return false;
   }
@@ -161,7 +171,8 @@ export async function isValidSession(token: string | undefined | null): Promise<
   const c = r();
   if (!c) return false;
   try {
-    return (await c.get(`wanz:ses:${token}`)) === '1';
+    const v = await c.get(`wanz:ses:${token}`);
+    return norm(v) === '1';
   } catch {
     return false;
   }

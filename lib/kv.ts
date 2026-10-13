@@ -37,7 +37,7 @@ export async function getMaintenance(): Promise<boolean> {
   if (maintCache && Date.now() - maintCache.at < CACHE_TTL) return maintCache.val;
   try {
     const v = await c.get('wanz:maintenance');
-    const val = v === '1' || v === true;
+    const val = String(v).replace(/^"|"$/g, '') === '1';
     maintCache = { val, at: Date.now() };
     return val;
   } catch {
