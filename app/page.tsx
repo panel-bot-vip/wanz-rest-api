@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TurnstileWidget from '@/components/TurnstileWidget';
-import FloatingBoxes from '@/components/FloatingBoxes';
 import RevealOnScroll from '@/components/RevealOnScroll';
 import ScrollProgress from '@/components/ScrollProgress';
 import CountUp from '@/components/CountUp';
+import FloatingSparkles from '@/components/FloatingSparkles';
+import RoastSection from '@/components/RoastSection';
 import { ENDPOINTS } from '@/lib/endpoints';
 import {
   SparklesIcon, BanIcon, RocketIcon, ChartIcon, LockIcon,
@@ -86,14 +87,14 @@ export default function Home() {
 
   return (
     <>
-      <FloatingBoxes />
       <ScrollProgress />
       <RevealOnScroll />
       <div className="min-h-screen page-layer">
       <Header />
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 pt-16 pb-8">
+      <section className="hero-anim max-w-7xl mx-auto px-4 pt-16 pb-8">
+        <FloatingSparkles />
         <div className="text-center mb-12">
           <div className="neo-badge mb-6 icon-text" data-reveal>
             <SparklesIcon size={16} /> Gratis • Tanpa Login • Tanpa Ribet
@@ -310,6 +311,8 @@ export default function Home() {
           </a>
         </div>
       </section>
+
+      <RoastSection />
 
       <Footer />
       </div>

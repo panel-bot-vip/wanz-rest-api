@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ApiTester from '@/components/ApiTester';
-import FloatingBoxes from '@/components/FloatingBoxes';
 import RevealOnScroll from '@/components/RevealOnScroll';
 import ScrollProgress from '@/components/ScrollProgress';
 import { ENDPOINTS, CATEGORIES } from '@/lib/endpoints';
@@ -24,7 +23,6 @@ export default function DocsPage() {
 
   return (
     <>
-      <FloatingBoxes />
       <ScrollProgress />
       <RevealOnScroll />
       <div className="min-h-screen page-layer">

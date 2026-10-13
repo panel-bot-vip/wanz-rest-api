@@ -900,43 +900,6 @@ html, body { overflow-x: clip; }
   will-change: transform;
 }
 
-/* --- Kotak parallax (maju-mundur saat scroll) --- */
-.floating-boxes {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.fbox {
-  position: absolute;
-  will-change: transform;
-  /* --p diisi JS (px scroll) lalu dikalikan kecepatan masing-masing kotak */
-  transform: translate3d(
-    calc(var(--p, 0px) * var(--sx)),
-    calc(var(--p, 0px) * var(--sp)),
-    0
-  );
-}
-
-.fbox-inner {
-  width: 100%;
-  height: 100%;
-  background: inherit;
-  border: 3px solid var(--border-color);
-  border-radius: var(--fs, 16px);
-  box-shadow: 6px 6px 0 var(--shadow-color);
-  opacity: 0.9;
-  animation: box-idle 6.5s ease-in-out infinite;
-  animation-delay: var(--fd, 0s);
-}
-
-@keyframes box-idle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-14px) rotate(2deg); }
-}
-
 /* --- Reveal on scroll --- */
 [data-reveal] {
   opacity: 0;
@@ -985,7 +948,6 @@ html, body { overflow-x: clip; }
     transform: none !important;
     transition: none !important;
   }
-  .fbox-inner { animation: none !important; }
   .scroll-progress { display: none !important; }
   .neo-card, .neo-button { transition: none !important; }
   .wiggle, .float-animation, .pulse-glow, .marquee { animation: none !important; }
@@ -997,3 +959,126 @@ html, body { overflow-x: clip; }
 .rv-3 { --rd: 220ms; }
 .rv-4 { --rd: 300ms; }
 .rv-5 { --rd: 380ms; }
+
+/* ============================================================
+   HOMEPAGE RAME — objek gerak + teks sindir API lain
+   Semua gerak murni CSS (tanpa JS) biar halus & tak bug.
+   ============================================================ */
+
+/* Konten hero selalu di atas sparkle */
+.hero-anim { position: relative; }
+.hero-anim > *:not(.float-sparkles) { position: relative; z-index: 1; }
+
+/* --- Sparkle melayang (objek gerak, murni CSS) --- */
+.float-sparkles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.sparkle {
+  position: absolute;
+  opacity: 0.55;
+  will-change: transform;
+  animation: spark-float 6s ease-in-out infinite;
+}
+@keyframes spark-float {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50%      { transform: translateY(-26px) rotate(45deg) scale(1.12); }
+}
+
+/* --- Marquee roast: teks sindir bergulir --- */
+.roast-marquee {
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid var(--border-color);
+  border-bottom: 3px solid var(--border-color);
+  background: var(--accent-yellow);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  padding: 12px 0;
+  margin: 0 0 40px;
+}
+.roast-marquee::before,
+.roast-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+.roast-marquee::before { left: 0;  background: linear-gradient(90deg, var(--accent-yellow), transparent); }
+.roast-marquee::after  { right: 0; background: linear-gradient(270deg, var(--accent-yellow), transparent); }
+.roast-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: roast-scroll 34s linear infinite;
+}
+.roast-marquee:hover .roast-track { animation-play-state: paused; }
+.roast-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+}
+.roast-item .sep { color: rgba(26,26,26,0.45); }
+@keyframes roast-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* --- Kartu sindir: API Lain vs Wanz --- */
+.roast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin: 12px 0 8px;
+}
+@media (min-width: 768px) { .roast-grid { grid-template-columns: 1fr 1fr; } }
+.roast-card {
+  border: 3px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 8px 8px 0 var(--shadow-color);
+  padding: 24px;
+  background: var(--card-bg);
+}
+.roast-card.bad  { background: #fff1f2; }
+.roast-card.good { background: #dcfce7; }
+.roast-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+.roast-sub {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.roast-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.roast-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.roast-list li .ic { flex: 0 0 auto; margin-top: 1px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle { animation: none !important; }
+  .roast-track { animation: none !important; }
+}

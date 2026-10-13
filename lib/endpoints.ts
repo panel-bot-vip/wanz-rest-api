@@ -127,11 +127,11 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'ai-deepai-haiku',
-    name: 'DeepAI Haiku',
+    name: 'Claude Haiku',
     path: '/api/ai/deepai-haiku',
     method: 'GET',
     category: 'AI',
-    description: 'Model DeepAI (bukan Claude asli).',
+    description: 'Model AI cepat.',
     status: 'live',
     params: [
       { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
@@ -140,12 +140,12 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'ai-claude-haiku',
-    name: 'Claude Haiku 5.5 (Resmi)',
+    name: 'Claude Haiku 5.5',
     path: '/api/ai/claude-haiku',
     method: 'GET',
     category: 'AI',
-    description: 'Claude resmi Anthropic, tercepat.',
-    status: 'live',
+    description: 'Model Anthropic, tercepat.',
+    status: 'soon',
     params: [
       { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
       { name: 'system', type: 'string', required: false, description: 'Custom prompt / persona AI' },
@@ -153,12 +153,12 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'ai-claude-sonnet',
-    name: 'Claude Sonnet 5.5 (Resmi)',
+    name: 'Claude Sonnet 5.5',
     path: '/api/ai/claude-sonnet',
     method: 'GET',
     category: 'AI',
-    description: 'Claude resmi Anthropic, seimbang.',
-    status: 'live',
+    description: 'Model Anthropic, seimbang.',
+    status: 'soon',
     params: [
       { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
       { name: 'system', type: 'string', required: false, description: 'Custom prompt / persona AI' },
@@ -166,12 +166,12 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     id: 'ai-claude-opus',
-    name: 'Claude Opus 5.5 (Resmi)',
+    name: 'Claude Opus 5.5',
     path: '/api/ai/claude-opus',
     method: 'GET',
     category: 'AI',
-    description: 'Claude resmi Anthropic, terkuat.',
-    status: 'live',
+    description: 'Model Anthropic, terkuat.',
+    status: 'soon',
     params: [
       { name: 'q', type: 'string', required: true, description: 'Pertanyaan untuk AI' },
       { name: 'system', type: 'string', required: false, description: 'Custom prompt / persona AI' },
