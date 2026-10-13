@@ -25,7 +25,6 @@ const FEATURES = [
 ];
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
   const [ip, setIp] = useState('Memuat...');
   const [battery, setBattery] = useState<number | null>(null);
   const [batteryCharging, setBatteryCharging] = useState(false);
@@ -37,8 +36,6 @@ export default function Home() {
   const liveEndpointCount = ENDPOINTS.filter((e) => e.status === 'live').length;
 
   useEffect(() => {
-    setMounted(true);
-
     fetch('https://api.ipify.org?format=json')
       .then((res) => res.json())
       .then((data) => setIp(data.ip))
@@ -83,8 +80,6 @@ export default function Home() {
     if (token) setVerified(true);
   };
 
-  if (!mounted) return null;
-
   return (
     <>
       <ScrollProgress />
@@ -96,13 +91,12 @@ export default function Home() {
       <section className="hero-anim max-w-7xl mx-auto px-4 pt-16 pb-8">
         <FloatingSparkles />
         <div className="text-center mb-12">
-          <div className="neo-badge mb-6 icon-text" data-reveal>
+          <div className="neo-badge mb-6 icon-text">
             <SparklesIcon size={16} /> Gratis • Tanpa Login • Tanpa Ribet
           </div>
 
           <h1
             className="handwritten"
-            data-reveal
             style={{
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
               fontWeight: 700,
@@ -114,12 +108,11 @@ export default function Home() {
             Wanz REST API&apos;s
           </h1>
 
-          <div className="allergy-badge mb-6 icon-text" data-reveal>
+          <div className="allergy-badge mb-6 icon-text">
             <BanIcon size={26} /> Alergi Pake Api Key <BanIcon size={26} />
           </div>
 
           <p
-            data-reveal
             style={{
               fontSize: '1.25rem',
               color: 'var(--text-secondary)',
@@ -132,7 +125,7 @@ export default function Home() {
             Langsung pakai tanpa perlu daftar!
           </p>
 
-          <div className="flex gap-4 justify-center flex-wrap" data-reveal>
+          <div className="flex gap-4 justify-center flex-wrap">
             <a href="/docs" className="neo-button neo-button-accent icon-text" style={{ textDecoration: 'none' }}>
               <RocketIcon size={18} /> Mulai Sekarang
             </a>
