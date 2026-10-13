@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import AntiClone from '@/components/AntiClone';
 
 export const metadata: Metadata = {
   title: "Wanz REST API's - Platform REST API Gratis Tanpa Login",
@@ -29,7 +30,10 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <AntiClone />
+        {children}
+      </body>
     </html>
   );
 }
