@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { PALETTES, applyPalette, getStoredPalette } from '@/lib/palettes';
 import {
   HomeIcon, DocsIcon, ChartIcon, ZapIcon, PaletteIcon,
-  SunIcon, MoonIcon, MenuIcon, XIcon, CheckIcon,
+  SunIcon, MoonIcon, MenuIcon, XIcon, CheckIcon, HelpIcon,
 } from './icons';
 
 const NAV_ITEMS = [
   { href: '/', text: 'Beranda', Icon: HomeIcon },
   { href: '/docs', text: 'Dokumentasi', Icon: DocsIcon },
+  { href: '/bantuan', text: 'Bantuan', Icon: HelpIcon },
   { href: '/#stats', text: 'Statistik', Icon: ChartIcon },
 ];
 

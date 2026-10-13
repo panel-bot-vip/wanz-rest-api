@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getMaintenance,
+  getBlocklist,
+  recordVisit,
+  kvReady,
+} from '@/lib/kv';
 
 /**
- * Lapisan proteksi anti-clone:
- * 1. Blokir User-Agent scraper/pembuat clone (HTTrack, wget, WebCopier, dsb) di halaman web.
- *    API TETAP terbuka untuk semua — pengguna bebas panggil via curl/http.
- * 2. Rate limit per IP (in-memory, per instance) — memperlambat perayapan massal.
- * 3. Security headers + watermark X-Wanz-Origin di setiap respons.
+ * Lapisan proteksi + admin:
+ * 1. Blokir User-Agent scraper/pembuat clone di halaman web (API tetap terbuka).
+ * 2. Rate limit per IP (in-memory, per instance).
+ * 3. [admin] Block IP + mode maintenance (persisten via Upstash Redis).
+ * 4. [admin] Catat IP pengunjung (log buat dilihat di panel).
+ * 5. Security headers + watermark X-Wanz-Origin.
  */
 
 const SCRAPING_UA =
@@ -42,10 +49,11 @@ function rateLimited(ip: string, limit: number): boolean {
   return entry.count > limit;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApi = pathname.startsWith('/api');
   const ua = request.headers.get('user-agent') || '';
+  const ip = clientIp(request);
 
   // 1. Scraper otomatis dilarang masuk halaman web (API tetap boleh)
   if (!isApi && SCRAPING_UA.test(ua)) {
@@ -55,8 +63,43 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  // 2. Rate limit per IP
-  if (rateLimited(clientIp(request), isApi ? LIMIT_API : LIMIT_WEB)) {
+  // 2. [admin] Akses persisten (hanya kalau Upstash sudah dipasang)
+  if (kvReady()) {
+    // 2a. Catat IP pengunjung (throttled, tanpa error)
+    await recordVisit(ip);
+
+    // 2b. IP yang diblokir -> 403
+    const blocklist = await getBlocklist();
+    if (blocklist.has(ip)) {
+      if (isApi) {
+        return NextResponse.json(
+          { success: false, error: 'IP Anda diblokir.' },
+          { status: 403 }
+        );
+      }
+      return new NextResponse(
+        '<!doctype html><html lang="id"><body style="font-family:sans-serif;background:#0f0f23;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><h1 style="border:3px solid #fff;padding:16px 24px">403 — IP Anda diblokir</h1></body></html>',
+        { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }
+      );
+    }
+
+    // 2c. Mode maintenance -> nonaktifkan situs untuk umum
+    if (await getMaintenance()) {
+      if (isApi) {
+        return NextResponse.json(
+          { success: false, error: 'Server sedang dalam mode perawatan. Coba lagi nanti.' },
+          { status: 503, headers: { 'retry-after': '300' } }
+        );
+      }
+      return new NextResponse(
+        '<!doctype html><html lang="id"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Perawatan — Wanz REST API</title></head><body style="font-family:sans-serif;background:#0f0f23;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center"><div><div style="font-size:60px">🛠️</div><h1 style="border:3px solid #FACC15;color:#FACC15;padding:16px 24px">Sedang Perawatan</h1><p>Server sedang diperbarui. Coba lagi beberapa saat lagi.</p></div></body></html>',
+        { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'retry-after': '300' } }
+      );
+    }
+  }
+
+  // 3. Rate limit per IP
+  if (rateLimited(ip, isApi ? LIMIT_API : LIMIT_WEB)) {
     if (isApi) {
       return NextResponse.json(
         { success: false, error: 'Terlalu banyak request. Coba lagi dalam satu menit.' },
@@ -69,7 +112,7 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // 3. Security headers + watermark asal-usul
+  // 4. Security headers + watermark asal-usul
   const res = NextResponse.next();
   res.headers.set('X-Wanz-Origin', 'wanz-rest-api');
   res.headers.set('X-Content-Type-Options', 'nosniff');
