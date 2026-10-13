@@ -9,6 +9,7 @@ import ScrollProgress from '@/components/ScrollProgress';
 import CountUp from '@/components/CountUp';
 import FloatingSparkles from '@/components/FloatingSparkles';
 import RoastSection from '@/components/RoastSection';
+import Loader from '@/components/Loader';
 import { ENDPOINTS } from '@/lib/endpoints';
 import {
   SparklesIcon, BanIcon, RocketIcon, ChartIcon, LockIcon,
@@ -25,6 +26,7 @@ const FEATURES = [
 ];
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
   const [ip, setIp] = useState('Memuat...');
   const [battery, setBattery] = useState<number | null>(null);
   const [batteryCharging, setBatteryCharging] = useState(false);
@@ -82,6 +84,7 @@ export default function Home() {
 
   return (
     <>
+      {loading && <Loader onDone={() => setLoading(false)} />}
       <ScrollProgress />
       <RevealOnScroll />
       <div className="min-h-screen page-layer">
