@@ -3,9 +3,32 @@ import './globals.css';
 import AntiClone from '@/components/AntiClone';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rest-api-wanz-codex.vercel.app'),
   title: "Wanz REST API's - Platform REST API Gratis Tanpa Login",
   description:
     'Platform penyedia REST API gratis, tanpa login, tanpa ribet. Alergi Pake Api Key!',
+  applicationName: "Wanz REST API's",
+  keywords: ['REST API', 'API gratis', 'API tanpa key', 'API Indonesia', 'developer tools'],
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    url: 'https://rest-api-wanz-codex.vercel.app',
+    siteName: "Wanz REST API's",
+    title: "Wanz REST API's - Platform REST API Gratis Tanpa Login",
+    description:
+      'Platform penyedia REST API gratis, tanpa login, tanpa ribet. Alergi Pake Api Key!',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Wanz REST API's - Platform REST API Gratis Tanpa Login",
+    description:
+      'Platform penyedia REST API gratis, tanpa login, tanpa ribet. Alergi Pake Api Key!',
+  },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
+  themeColor: '#A855F7',
 };
 
 // Script ini mencegah FOUC (flash of wrong theme) sebelum React hydrate

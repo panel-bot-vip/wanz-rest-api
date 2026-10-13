@@ -754,30 +754,6 @@ export const ENDPOINTS: Endpoint[] = [
     ],
   },
   {
-    id: 'webicon',
-    name: 'Icon Web',
-    path: '/api/tools/webicon',
-    method: 'GET',
-    category: 'Tools',
-    description: 'Ambil favicon sebuah website.',
-    status: 'live',
-    params: [
-      { name: 'url', type: 'string', required: true, description: 'Link website' },
-    ],
-  },
-  {
-    id: 'webdesc',
-    name: 'Deskripsi Web',
-    path: '/api/tools/webdesc',
-    method: 'GET',
-    category: 'Tools',
-    description: 'Scrape judul & deskripsi website.',
-    status: 'live',
-    params: [
-      { name: 'url', type: 'string', required: true, description: 'Link website' },
-    ],
-  },
-  {
     id: 'webrecord',
     name: 'Record Web',
     path: '/api/tools/webrecord',

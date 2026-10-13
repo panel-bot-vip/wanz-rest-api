@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { normalizeUrl } from '@/lib/webinfo';
 
 export const runtime = 'nodejs';
+
+function normalizeUrl(raw: string): string | null {
+  let s = raw.trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) s = 'https://' + s.replace(/^\/+/, '');
+  try {
+    const u = new URL(s);
+    if (!u.hostname.includes('.')) return null;
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Screenshot Web — lempar URL ke layanan screenshot publik gratis (mshots),

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- bayangan keras ala neo-brutalisme -->
+  <rect x="8" y="8" width="50" height="50" rx="11" fill="#1a1a1a"/>
+  <!-- ubin utama -->
+  <rect x="4" y="4" width="50" height="50" rx="11" fill="#A855F7" stroke="#1a1a1a" stroke-width="3.5"/>
+  <!-- huruf W tebal -->
+  <path d="M15 18 L22 18 L26 32 L29 22 L33 22 L36 32 L40 18 L47 18 L41 45 L35 45 L31 33 L27 45 L21 45 Z" fill="#ffffff" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+</svg>
