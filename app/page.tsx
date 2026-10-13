@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import TurnstileWidget from '@/components/TurnstileWidget';
+import FloatingBoxes from '@/components/FloatingBoxes';
+import RevealOnScroll from '@/components/RevealOnScroll';
+import ScrollProgress from '@/components/ScrollProgress';
+import CountUp from '@/components/CountUp';
 import { ENDPOINTS } from '@/lib/endpoints';
 import {
   SparklesIcon, BanIcon, RocketIcon, ChartIcon, LockIcon,
@@ -81,18 +85,23 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen">
+    <>
+      <FloatingBoxes />
+      <ScrollProgress />
+      <RevealOnScroll />
+      <div className="min-h-screen page-layer">
       <Header />
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 pt-16 pb-8">
         <div className="text-center mb-12">
-          <div className="neo-badge mb-6 icon-text">
+          <div className="neo-badge mb-6 icon-text" data-reveal>
             <SparklesIcon size={16} /> Gratis • Tanpa Login • Tanpa Ribet
           </div>
 
           <h1
             className="handwritten"
+            data-reveal
             style={{
               fontSize: 'clamp(2.5rem, 8vw, 5rem)',
               fontWeight: 700,
@@ -104,11 +113,12 @@ export default function Home() {
             Wanz REST API&apos;s
           </h1>
 
-          <div className="allergy-badge mb-6 icon-text">
+          <div className="allergy-badge mb-6 icon-text" data-reveal>
             <BanIcon size={26} /> Alergi Pake Api Key <BanIcon size={26} />
           </div>
 
           <p
+            data-reveal
             style={{
               fontSize: '1.25rem',
               color: 'var(--text-secondary)',
@@ -121,7 +131,7 @@ export default function Home() {
             Langsung pakai tanpa perlu daftar!
           </p>
 
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-4 justify-center flex-wrap" data-reveal>
             <a href="/docs" className="neo-button neo-button-accent icon-text" style={{ textDecoration: 'none' }}>
               <RocketIcon size={18} /> Mulai Sekarang
             </a>
@@ -132,7 +142,7 @@ export default function Home() {
         </div>
 
         {/* Turnstile Verification */}
-        <div className="neo-card" style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
+        <div className="neo-card rv-1" data-reveal style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
           <h3 className="icon-text" style={{ justifyContent: 'center', textAlign: 'center', marginBottom: '16px', color: 'var(--text-primary)' }}>
             <LockIcon size={19} /> Verifikasi Keamanan
           </h3>
@@ -149,13 +159,13 @@ export default function Home() {
 
         {/* Stats Section — data asli, bukan angka karangan */}
         <div id="stats" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div className="neo-card stat-card">
+          <div className="neo-card stat-card" data-reveal>
             <div className="stat-number icon-text" style={{ color: 'var(--accent-purple)', justifyContent: 'center' }}>
-              <ServerIcon size={30} /> {liveEndpointCount}
+              <ServerIcon size={30} /> <CountUp value={liveEndpointCount} />
             </div>
             <p style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Endpoint Aktif</p>
           </div>
-          <div className="neo-card stat-card">
+          <div className="neo-card stat-card" data-reveal>
             <div
               className="stat-number icon-text"
               style={{
@@ -170,7 +180,7 @@ export default function Home() {
               <ActivityIcon size={15} /> Status API{apiMs !== null ? ` • ${apiMs}ms` : ''}
             </p>
           </div>
-          <div className="neo-card stat-card">
+          <div className="neo-card stat-card" data-reveal>
             <div className="stat-number icon-text" style={{ color: 'var(--accent-mint)', justifyContent: 'center' }}>
               <StarIcon size={30} /> {stars === null ? '...' : stars}
             </div>
@@ -179,7 +189,7 @@ export default function Home() {
         </div>
 
         {/* Visitor Info */}
-        <div className="neo-card" style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
+        <div className="neo-card rv-1" data-reveal style={{ padding: '24px', maxWidth: '500px', margin: '0 auto 40px' }}>
           <h3 className="icon-text" style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>
             <InfoIcon size={19} /> Info Pengunjung
           </h3>
@@ -228,6 +238,7 @@ export default function Home() {
         <div className="mb-16">
           <h2
             className="handwritten icon-text"
+            data-reveal
             style={{
               fontSize: '2.5rem',
               justifyContent: 'center',
@@ -241,7 +252,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((f) => (
-              <div key={f.title} className="neo-card" style={{ padding: '24px' }}>
+              <div key={f.title} className="neo-card" data-reveal style={{ padding: '24px' }}>
                 <div className="feature-icon" style={{ background: f.bg, color: '#1a1a1a' }}>
                   <f.Icon size={26} />
                 </div>
@@ -257,6 +268,7 @@ export default function Home() {
         {/* CTA Section */}
         <div
           className="neo-card pulse-glow"
+          data-reveal
           style={{
             padding: '40px',
             textAlign: 'center',
@@ -300,6 +312,7 @@ export default function Home() {
       </section>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ApiTester from '@/components/ApiTester';
+import FloatingBoxes from '@/components/FloatingBoxes';
+import RevealOnScroll from '@/components/RevealOnScroll';
+import ScrollProgress from '@/components/ScrollProgress';
 import { ENDPOINTS, CATEGORIES } from '@/lib/endpoints';
 import { DocsIcon, FrownIcon, LockIcon, BulbIcon } from '@/components/icons';
 
@@ -20,13 +23,18 @@ export default function DocsPage() {
   });
 
   return (
-    <div className="min-h-screen">
+    <>
+      <FloatingBoxes />
+      <ScrollProgress />
+      <RevealOnScroll />
+      <div className="min-h-screen page-layer">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1
             className="handwritten icon-text"
+            data-reveal
             style={{
               fontSize: '3rem',
               fontWeight: 700,
@@ -36,13 +44,13 @@ export default function DocsPage() {
           >
             <DocsIcon size={36} /> Dokumentasi API
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
+          <p data-reveal style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
             Temukan semua endpoint API yang tersedia dan uji coba langsung.
           </p>
         </div>
 
         {/* Search and Filter */}
-        <div className="neo-card" style={{ padding: '20px', marginBottom: '24px' }}>
+        <div className="neo-card" data-reveal style={{ padding: '20px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
             <div style={{ flex: '1', minWidth: '250px' }}>
               <input
@@ -82,7 +90,7 @@ export default function DocsPage() {
             </div>
           ) : (
             filteredEndpoints.map((endpoint) => (
-              <div key={endpoint.id} className="endpoint-card">
+              <div key={endpoint.id} className="endpoint-card" data-reveal>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                   <div style={{ flex: '1', minWidth: '250px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
@@ -204,7 +212,7 @@ export default function DocsPage() {
         </div>
 
         {/* Usage Example */}
-        <div className="neo-card" style={{ padding: '24px', marginTop: '32px' }}>
+        <div className="neo-card" data-reveal style={{ padding: '24px', marginTop: '32px' }}>
           <h3 className="icon-text" style={{ fontWeight: 700, marginBottom: '16px', color: 'var(--text-primary)' }}>
             <BulbIcon size={18} /> Contoh Penggunaan
           </h3>
@@ -222,6 +230,7 @@ curl "${ENDPOINTS[0].path}?q=programming&limit=5"`}
       </div>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }

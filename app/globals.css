@@ -866,3 +866,134 @@ html, body { overflow-x: clip; }
   .mb-12 { margin-bottom: 2rem; }
   .mb-16 { margin-bottom: 2.5rem; }
 }
+
+/* ============================================================
+   ANIMASI — halus, bukan norak.
+   Semua nonaktif otomatis bila pengguna minta reduced-motion.
+   ============================================================ */
+
+/* Lapisan konten harus di atas kotak parallax yang position:fixed */
+.page-layer {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Bilah progres scroll di puncak halaman --- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  z-index: 9999;
+  pointer-events: none;
+  background: transparent;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0% 50%;
+  background: linear-gradient(90deg, var(--accent-purple), var(--accent-orange));
+  border-bottom: 2px solid var(--border-color);
+  will-change: transform;
+}
+
+/* --- Kotak parallax (maju-mundur saat scroll) --- */
+.floating-boxes {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fbox {
+  position: absolute;
+  will-change: transform;
+  /* --p diisi JS (px scroll) lalu dikalikan kecepatan masing-masing kotak */
+  transform: translate3d(
+    calc(var(--p, 0px) * var(--sx)),
+    calc(var(--p, 0px) * var(--sp)),
+    0
+  );
+}
+
+.fbox-inner {
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border: 3px solid var(--border-color);
+  border-radius: var(--fs, 16px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  opacity: 0.9;
+  animation: box-idle 6.5s ease-in-out infinite;
+  animation-delay: var(--fd, 0s);
+}
+
+@keyframes box-idle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(2deg); }
+}
+
+/* --- Reveal on scroll --- */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--rd, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Jeda bertahap untuk elemen di dalam grid yang sama */
+.grid > [data-reveal]:nth-child(1) { --rd: 0ms; }
+.grid > [data-reveal]:nth-child(2) { --rd: 90ms; }
+.grid > [data-reveal]:nth-child(3) { --rd: 180ms; }
+.grid > [data-reveal]:nth-child(4) { --rd: 270ms; }
+.grid > [data-reveal]:nth-child(5) { --rd: 360ms; }
+.grid > [data-reveal]:nth-child(6) { --rd: 450ms; }
+
+/* --- Hover lebih halus & sedikit "melayang" --- */
+.neo-card {
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow 0.22s cubic-bezier(0.34, 1.4, 0.64, 1),
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.neo-button {
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow 0.18s cubic-bezier(0.34, 1.4, 0.64, 1),
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* --- Hormati preferensi reduced-motion: matikan semua animasi --- */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .fbox-inner { animation: none !important; }
+  .scroll-progress { display: none !important; }
+  .neo-card, .neo-button { transition: none !important; }
+  .wiggle, .float-animation, .pulse-glow, .marquee { animation: none !important; }
+}
+
+/* Jeda bertahap eksplisit (dipakai elemen di luar .grid) */
+.rv-1 { --rd: 60ms; }
+.rv-2 { --rd: 140ms; }
+.rv-3 { --rd: 220ms; }
+.rv-4 { --rd: 300ms; }
+.rv-5 { --rd: 380ms; }
