@@ -18,7 +18,7 @@ export interface Endpoint {
   params: EndpointParam[];
 }
 
-export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools', 'Game', 'Islami'];
+export const CATEGORIES = ['Semua', 'Pencarian', 'AI', 'Downloader', 'Tools', 'Game', 'Islami', 'Komik', 'Musik', 'Anime'];
 
 export const ENDPOINTS: Endpoint[] = [
   {
@@ -32,6 +32,97 @@ export const ENDPOINTS: Endpoint[] = [
     params: [
       { name: 'q', type: 'string', required: true, description: 'Query pencarian' },
       { name: 'limit', type: 'number', required: false, description: 'Jumlah hasil (default: 8, max: 10)', default: '8' },
+    ],
+  },
+  {
+    id: 'music-search',
+    name: 'Cari Lagu',
+    path: '/api/music/search',
+    method: 'GET',
+    category: 'Musik',
+    description: 'Search lagu YouTube Music.',
+    status: 'live',
+    params: [
+      { name: 'q', type: 'string', required: true, description: 'Judul/artis lagu' },
+      { name: 'limit', type: 'number', required: false, description: 'Jumlah hasil (max 50)', default: '10' },
+      { name: 'filter', type: 'select', required: false, description: 'Jenis hasil', default: 'songs', options: ['songs', 'all'] },
+      { name: 'lang', type: 'select', required: false, description: 'Bahasa', default: 'en', options: ['en', 'id'] },
+      { name: 'gl', type: 'string', required: false, description: 'Negara (kode ISO)', default: 'US' },
+    ],
+  },
+  {
+    id: 'comic-search',
+    name: 'Cari Komik',
+    path: '/api/comic/search',
+    method: 'GET',
+    category: 'Komik',
+    description: 'Cari judul Webtoon/Komiku.',
+    status: 'live',
+    params: [
+      { name: 'q', type: 'string', required: true, description: 'Judul yang dicari' },
+      { name: 'site', type: 'select', required: false, description: 'Sumber', default: 'webtoon', options: ['webtoon', 'komiku', 'all'] },
+      { name: 'limit', type: 'number', required: false, description: 'Jumlah hasil (max 50)', default: '10' },
+      { name: 'searchType', type: 'select', required: false, description: 'Webtoon: jenis hasil', default: 'ALL', options: ['ALL', 'WEBTOON', 'CHALLENGE'] },
+      { name: 'lang', type: 'select', required: false, description: 'Bahasa Webtoon', default: 'en', options: ['en', 'id'] },
+    ],
+  },
+  {
+    id: 'comic-episodes',
+    name: 'Daftar Episode Komik',
+    path: '/api/comic/episodes',
+    method: 'GET',
+    category: 'Komik',
+    description: 'Daftar episode/chapter.',
+    status: 'live',
+    params: [
+      { name: 'site', type: 'select', required: true, description: 'Sumber', options: ['webtoon', 'komiku'] },
+      { name: 'id', type: 'string', required: true, description: 'titleNo (webtoon) / slug (komiku)' },
+      { name: 'pageSize', type: 'number', required: false, description: 'Webtoon: jumlah per halaman', default: '50' },
+      { name: 'cursor', type: 'number', required: false, description: 'Webtoon: offset lanjut', default: '0' },
+      { name: 'lang', type: 'select', required: false, description: 'Bahasa Webtoon', default: 'en', options: ['en', 'id'] },
+    ],
+  },
+  {
+    id: 'comic-read',
+    name: 'Baca Episode Komik',
+    path: '/api/comic/read',
+    method: 'GET',
+    category: 'Komik',
+    description: 'Gambar episode (urut baca).',
+    status: 'live',
+    params: [
+      { name: 'site', type: 'select', required: true, description: 'Sumber', options: ['webtoon', 'komiku'] },
+      { name: 'ref', type: 'string', required: false, description: 'ref dari /episodes (webtoon: encode dulu)' },
+      { name: 'id', type: 'string', required: false, description: 'Webtoon: titleNo (alternatif ref)' },
+      { name: 'ep', type: 'string', required: false, description: 'Webtoon: episodeNo (dgn id)' },
+    ],
+  },
+  {
+    id: 'anime-search',
+    name: 'Cari Anime',
+    path: '/api/anime/search',
+    method: 'GET',
+    category: 'Anime',
+    description: 'Pencarian anime (AniList).',
+    status: 'live',
+    params: [
+      { name: 'q', type: 'string', required: true, description: 'Judul anime' },
+      { name: 'limit', type: 'number', required: false, description: 'Jumlah hasil (max 25)', default: '10' },
+      { name: 'page', type: 'number', required: false, description: 'Halaman hasil', default: '1' },
+      { name: 'sort', type: 'select', required: false, description: 'Urutan', default: 'SEARCH_MATCH', options: ['SEARCH_MATCH', 'POPULARITY', 'SCORE', 'START_DATE', 'FAVOURITES', 'EPISODES'] },
+      { name: 'adult', type: 'select', required: false, description: 'Konten dewasa', default: '0', options: ['0', '1'] },
+    ],
+  },
+  {
+    id: 'anime-detail',
+    name: 'Detail Anime',
+    path: '/api/anime/detail',
+    method: 'GET',
+    category: 'Anime',
+    description: 'Info lengkap + link nonton.',
+    status: 'live',
+    params: [
+      { name: 'id', type: 'number', required: true, description: 'AniList id (dari /anime/search)' },
     ],
   },
   {
